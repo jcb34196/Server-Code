@@ -82,7 +82,7 @@ userRouter.post("/tokenIsValid", async (req, res) => {
 
 // to get user credentials
 userRouter.get("/", auth, async(req, res)=> {
-    const user = await User.findById (req, res);
+    const user = await User.findById (req.user);
     res.json({
         username: user.username,
         id: user._id,
