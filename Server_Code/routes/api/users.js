@@ -4,6 +4,7 @@ const userRouter = express.Router();
 const jwt = require("jsonwebtoken");
 const auth = require("../../middleware/auth");
 const User = require('../../models/User');
+const bodyParser = require("body-parser");
 
 // Signup Route
 userRouter.post("/signup", async (req, res) => {
@@ -59,7 +60,7 @@ userRouter.post("/login",async (req,res)=> {
             return res.status(400).send({ msg: "Password does not match email associated with this account. Please try again."});
         }
         const token = jwt.sign({id: user._id}, "passwordKey");
-        res.json({ token, user: {id: user._id, name: user.name} });
+        res.json({ token, user: {id: user._id, email: user.email, name: user.name, date: user.date, workouts: user.workouts} });
     } catch (err) {
         res.status(500).json({error: err.message});
     }
@@ -85,12 +86,26 @@ userRouter.post("/tokenIsValid", async (req, res) => {
 userRouter.get("/", auth, async(req, res)=> {
     const user = await User.findById (req.user);
     res.json({
-        name: user.name,
         id: user._id,
+        email: user.email,
+        name: user.name,
+        date: user.date,
+        workouts: user.workouts
     });
 });
 
+//To add/remove workout routines
+userRouter.put("/routines/:id", (req, res) => {
+    console.log(req.body.workouts)
+    
+    User.findByIdAndUpdate(req.params.id, { workouts: req.body.workouts })
+    .then((user) => { console.log("Success.")
+        res.json({msg: 'Updated user workouts successfully.'})})
+    .catch((err) => res.status(400).json({error: 'Unable to update the databse.'}))
 
+    
+   console.log("I'm getting requests.")
+})
 
 
 module.exports =userRouter;
