@@ -10,12 +10,22 @@ const userSchema = new mongoose.Schema({
     password: {
         requried: true,
         type: String,
-        minLength: 6, 
+        minLength: 8, 
     },
-    username: {
+    name: {
         required: true,
         type: String,
         trim: true,
+    },
+
+    date: {
+        required: true,
+        type: String,
+    },
+
+    workouts: {
+        required: true,
+        type: Array
     }
 });
 

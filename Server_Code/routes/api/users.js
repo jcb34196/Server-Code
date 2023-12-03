@@ -8,26 +8,26 @@ const User = require('../../models/User');
 // Signup Route
 userRouter.post("/signup", async (req, res) => {
     try{
-        const {email, password, confirmPassword, username} = req.body;
-        if (!email || !password || !username || !confirmPassword){
+        const {id, email, password, confirmPassword, name, date, workouts} = req.body;
+        if (!email || !password || !name || !confirmPassword){
             return res.status(400).json({msg: "Please enter all the fields"});
         }
-        if (password.length < 6) {
+        if (password.length < 8) {
             return res
             .status(400)
-            .json({msg: "Password should be atleast 6 characters"});
+            .json({msg: "Password must have at least 8 characters."});
         }
         if (confirmPassword !== password) {
-            return res.status(400).json({ msg: "Both the passwords dont match"});
+            return res.status(400).json({ msg: "Both password fields must match."});
         }
         const existingUser = await User.findOne({email});
         if( existingUser){
             return res
             .status(400)
-            .json({msg: "User with the same email already exists"});
+            .json({msg: "This email address is already in use."});
         }
         const hashedPassword = await bcryptjs.hash(password,8);
-        const newUser = new User({email, password: hashedPassword, username});
+        const newUser = new User({email, password: hashedPassword, name, date, workouts});
         
         const savedUser = await newUser.save();
         console.log(savedUser.username);
@@ -50,13 +50,13 @@ userRouter.post("/login",async (req,res)=> {
         if(!user) {
             return res
             .status(400)
-            .send({ msg: "User with this email does not exist"});
+            .send({ msg: "Cannot find account associated with this email. Please try again."});
         }
 
         const isMatch = await bcryptjs.compare(password,  user.password);
         
         if (!isMatch) {
-            return res.status(400).send({ msg: "Incorrect password."});
+            return res.status(400).send({ msg: "Password does not match email associated with this account. Please try again."});
         }
         const token = jwt.sign({id: user._id}, "passwordKey");
         res.json({ token, user: {id: user._id, username: user.username} });
