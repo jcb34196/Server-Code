@@ -59,7 +59,7 @@ userRouter.post("/login",async (req,res)=> {
             return res.status(400).send({ msg: "Password does not match email associated with this account. Please try again."});
         }
         const token = jwt.sign({id: user._id}, "passwordKey");
-        res.json({ token, user: {id: user._id, username: user.username} });
+        res.json({ token, user: {id: user._id, name: user.name} });
     } catch (err) {
         res.status(500).json({error: err.message});
     }
@@ -76,6 +76,7 @@ userRouter.post("/tokenIsValid", async (req, res) => {
         if(!user) return res.json(false);
         return res.json(true);
     } catch (err) {
+        console.log("Why")
         res.status(500).json({error: err.message});
     }
 });
@@ -84,9 +85,12 @@ userRouter.post("/tokenIsValid", async (req, res) => {
 userRouter.get("/", auth, async(req, res)=> {
     const user = await User.findById (req.user);
     res.json({
-        username: user.username,
+        name: user.name,
         id: user._id,
     });
 });
+
+
+
 
 module.exports =userRouter;
