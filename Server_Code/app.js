@@ -34,4 +34,7 @@ mongoose.connect(conn_str)
 //app.use('/api/items',items);
 
 const users = require('./routes/api/users');
+const excercises = require('./routes/api/excercises')
+
 app.use('/api/users',users);
+app.use('/api/excercises', excercises)
